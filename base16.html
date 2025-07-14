@@ -336,7 +336,7 @@
                         <div class="example-title">示例码表：</div>
                         <div class="example-item">1. 标准码表: 0123456789ABCDEF</div>
                         <div class="example-item">2. 动物码表: 🐶🐱🐭🐹🐰🦊🐻🐼🐨🐯🦁🐮🐷🐸🐵🐔</div>
-                        <div class="example-item">3. 齁语码表: 齁哦嗯啊噫额哈哼呜唔咕呼咿~!❤</div>
+                        <div class="example-item">3. 齁语码表: 嗯额哈哼呜噫咕唔哦呼!咿~❤齁啊</div>
                     </div>
                 </div>
             </div>
@@ -445,7 +445,7 @@
             try {
                 const inputText = standardInput.value;
                 if (!inputText) {
-                    standardResult.value = '请输入要编码的文本';
+                    standardResult.value = '请输入要编/解码的文本';
                     return;
                 }
 
@@ -460,7 +460,7 @@
             try {
                 const inputText = standardInput.value.trim();
                 if (!inputText) {
-                    standardResult.value = '请输入要解码的文本';
+                    standardResult.value = '请输入要编/解码的文本';
                     return;
                 }
 
@@ -477,7 +477,7 @@
                 const customTable = validateCustomTable(customTableInput.value);
 
                 if (!inputText) {
-                    customResult.value = '请输入要编码的文本';
+                    customResult.value = '请输入要编/解码的文本';
                     return;
                 }
 
@@ -494,7 +494,7 @@
                 const customTable = validateCustomTable(customTableInput.value);
 
                 if (!inputText) {
-                    customResult.value = '请输入要解码的文本';
+                    customResult.value = '请输入要编/解码的文本';
                     return;
                 }
 
