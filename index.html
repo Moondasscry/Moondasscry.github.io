@@ -1,27 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
-    <title>隐秘的84小站</title>
     <meta charset="utf-8" />
+    <title>Just a Mortal Web</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #fafbfc;
+            color: #222;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 32px 24px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+            text-align: center;
+        }
+        h1 {
+            font-weight: 400;
+            margin-bottom: 0.5em;
+        }
+        p {
+            margin: 1em 0;
+            font-size: 1.1em;
+        }
+        a {
+            color: #007acc;
+            text-decoration: none;
+            border-bottom: 1px dotted #007acc;
+            transition: border 0.2s;
+        }
+        a:hover {
+            border-bottom: 1px solid #007acc;
+        }
+        .pic {
+            margin: 2em 0 1em 0;
+        }
+        .date {
+            color: #888;
+            font-size: 0.95em;
+        }
+    </style>
 </head>
-
-<!--
-我想我们应该讨论下日志格式的问题，格式就暂且定为
-<p>日期</p>
-<p>内容</p>
-得了
--->
-
 <body>
-<h1 style="text-align:center;">Hello World</h1>
-<p style="text-align:center;font-size:20px;">这里是拔丝空间（笑</p><br/>
-<h1>技术问题</h1>
-<p>因为技术力不足，现在只会写HTML欸，悲，希望赶快进步</p>
-<h1>日记</h1>
-<p>2023/7/21</p>
-<p>下午的阳光，无人近水的角落，几十年前的松树和铁栅栏，<a href="https://github.com/Moondasscry/Moondasscry.github.io/blob/main/PICtures/20230721.jpg">完美的宁静</a></p>
-<h1>历史</h1>
-<p>什么时候建站不重要，重要的是我们什么时候成长</p>
-<p>就当我们在2023/7/22 1:03走来吧!!!  :-)</p>
+    <div class="container">
+        <h1>Hello World</h1>
+        <p>Hi there</p>
+
+        <div class="pic">
+            <h1>Nothing but a lovely pic</h1>
+            <p class="date">2023/7/21</p>
+            <p>
+                Sunshine in afternoon, shore where no one here,<br>
+                pine tree and iron fence<br>
+                <a href="https://github.com/Moondasscry/Moondasscry.github.io/blob/main/PICtures/20230721.jpg" target="_blank">perfect blue</a>
+            </p>
+        </div>
+
+        <h1>Link to a base16 web</h1>
+        <p>
+            <a href="https://github.com/Moondasscry/Moondasscry.github.io/blob/main/base16.html" target="_blank">
+                base16.html
+            </a>
+        </p>
+    </div>
 </body>
 </html>

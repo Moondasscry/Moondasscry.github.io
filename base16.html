@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base16编解码工具（支持自定义码表）</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .card-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .card-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.93);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eaeaea;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+            color: #1a2a6c;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            color: #1a2a6c;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+            font-size: 1.1rem;
+        }
+
+        textarea,
+        input,
+        select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus,
+        input:focus,
+        select:focus {
+            border-color: #1a73e8;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+            font-family: monospace;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-encode {
+            background: linear-gradient(to right, #1a2a6c, #b21f1f);
+            color: white;
+        }
+
+        .btn-decode {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+            color: white;
+        }
+
+        .btn-custom {
+            background: linear-gradient(to right, #fdbb2d, #b21f1f);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .result-container {
+            width: 100%;
+            /* 固定宽度 */
+            max-height: 300px;
+            /* 限制最大高度 */
+            overflow-y: auto;
+            /* 垂直滚动条 */
+            overflow-x: hidden;
+            /* 禁止水平滚动 */
+            margin-top: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #1a73e8;
+        }
+
+        .result-textarea {
+            width: 100%;
+            min-height: 120px;
+            max-height: 300px;
+            resize: vertical;
+            border: none;
+            background: transparent;
+            font-family: monospace;
+            font-size: 1.05rem;
+            color: #333;
+            outline: none;
+            padding: 0;
+            box-shadow: none;
+            overflow-y: auto;
+        }
+
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #1a73e8;
+        }
+
+        .custom-table-container {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 2px dashed #1a73e8;
+        }
+
+        .example-table {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 8px;
+        }
+
+        .example-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #1a2a6c;
+        }
+
+        .example-item {
+            margin-bottom: 8px;
+            font-family: monospace;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: white;
+            padding: 20px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .error {
+            color: #d93025;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            background: #fce8e6;
+            border-left: 4px solid #d93025;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Base16编解码工具</h1>
+            <p class="subtitle">
+                支持标准Base16编解码和自定义Unicode码表（支持中文、符号等任意Unicode字符）。自定义码表功能允许您创建独特的编码方案，使用任意16个字符作为编码字符集。
+            </p>
+        </header>
+
+        <div class="card-container">
+            <!-- 标准Base16编解码 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🔢</div>
+                    <h2 class="card-title">标准Base16编解码</h2>
+                </div>
+
+                <div class="form-group">
+                    <label for="standard-input">输入文本 (UTF-8):</label>
+                    <textarea id="standard-input" placeholder="输入要编码的文本，例如：Hello World ❤️"></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button id="standard-encode" class="btn btn-encode">
+                        <i>→</i> Base16编码
+                    </button>
+                    <button id="standard-decode" class="btn btn-decode">
+                        <i>←</i> Base16解码
+                    </button>
+                </div>
+
+                <div class="result-container">
+                    <div class="result-title">编码/解码结果:</div>
+                    <textarea id="standard-result" class="result-textarea" readonly></textarea>
+                </div>
+            </div>
+
+            <!-- 自定义码表编解码 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🎨</div>
+                    <h2 class="card-title">自定义码表编解码</h2>
+                </div>
+
+                <div class="form-group">
+                    <label for="custom-table">自定义码表 (16个唯一字符):</label>
+                    <input type="text" id="custom-table" placeholder="例如：❤️🚀⭐🐱🐶🌞🌙🍎🍌🍉中文符号ABC">
+                    <small>注意：必须输入16个不同的Unicode字符</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="custom-input">输入文本 (UTF-8):</label>
+                    <textarea id="custom-input" placeholder="输入要编码的文本"></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button id="custom-encode" class="btn btn-custom">
+                        <i>→</i> 自定义编码
+                    </button>
+                    <button id="custom-decode" class="btn btn-custom">
+                        <i>←</i> 自定义解码
+                    </button>
+                </div>
+
+                <div class="result-container">
+                    <div class="result-title">编码/解码结果:</div>
+                    <textarea id="custom-result" class="result-textarea" readonly></textarea>
+                </div>
+
+                <div class="custom-table-container">
+                    <h3>自定义码表说明</h3>
+                    <p>自定义码表允许您使用任意16个Unicode字符替代标准的0-9A-F字符集，实现独特的编码方案。</p>
+
+                    <div class="example-table">
+                        <div class="example-title">示例码表：</div>
+                        <div class="example-item">1. 标准码表: 0123456789ABCDEF</div>
+                        <div class="example-item">2. 动物码表: 🐶🐱🐭🐹🐰🦊🐻🐼🐨🐯🦁🐮🐷🐸🐵🐔</div>
+                        <div class="example-item">3. 齁语码表: 齁哦嗯啊噫额哈哼呜唔咕呼咿~!❤</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Base16编解码工具 &copy; 2025 | 支持标准Base16和自定义Unicode码表</p>
+        </div>
+    </div>
+
+    <script>
+        // 标准Base16码表 [1,5](@ref)
+        const STANDARD_TABLE = "0123456789ABCDEF";
+
+        // DOM元素
+        const standardInput = document.getElementById('standard-input');
+        const standardResult = document.getElementById('standard-result');
+        const standardEncodeBtn = document.getElementById('standard-encode');
+        const standardDecodeBtn = document.getElementById('standard-decode');
+
+        const customInput = document.getElementById('custom-input');
+        const customTableInput = document.getElementById('custom-table');
+        const customResult = document.getElementById('custom-result');
+        const customEncodeBtn = document.getElementById('custom-encode');
+        const customDecodeBtn = document.getElementById('custom-decode');
+
+        // 文本编码器/解码器 (UTF-8)
+        const textEncoder = new TextEncoder();
+        const textDecoder = new TextDecoder('utf-8');
+
+        // Base16编码函数 [1,8](@ref)
+        function base16Encode(data, table = STANDARD_TABLE) {
+            const bytes = textEncoder.encode(data);
+            const tableArr = Array.from(table); // 关键：用字符数组
+            let result = '';
+
+            for (let i = 0; i < bytes.length; i++) {
+                const byte = bytes[i];
+                // 取高4位
+                const highNibble = byte >> 4;
+                // 取低4位
+                const lowNibble = byte & 0x0F;
+
+                // 从码表中获取对应字符
+                result += tableArr[highNibble] + tableArr[lowNibble];
+            }
+
+            return result;
+        }
+
+        // Base16解码函数 [1,8](@ref)
+        function base16Decode(encoded, table = STANDARD_TABLE) {
+            const tableArr = Array.from(table); // 关键：用字符数组
+            // 验证输入长度是否为偶数
+            const chars = Array.from(encoded);
+            if (chars.length % 2 !== 0) {
+                throw new Error('编码长度必须为偶数');
+            }
+
+            // 创建反向映射表以提高性能
+            const reverseTable = {};
+            for (let i = 0; i < tableArr.length; i++) {
+                reverseTable[tableArr[i]] = i;
+            }
+
+            const byteArray = new Uint8Array(chars.length / 2);
+
+            for (let i = 0; i < chars.length; i += 2) {
+                const char1 = chars[i];
+                const char2 = chars[i + 1];
+
+                // 检查字符是否在码表中
+                if (reverseTable[char1] === undefined || reverseTable[char2] === undefined) {
+                    throw new Error(`码表中不存在的字符: ${char1} 或 ${char2}`);
+                }
+
+                const highNibble = reverseTable[char1];
+                const lowNibble = reverseTable[char2];
+
+                // 合并高4位和低4位
+                byteArray[i / 2] = (highNibble << 4) | lowNibble;
+            }
+
+            // 将字节数组解码为UTF-8字符串
+            return textDecoder.decode(byteArray);
+        }
+
+        // 验证自定义码表
+        function validateCustomTable(table) {
+            const chars = Array.from(table); // 按实际字符分割
+            if (!table || chars.length !== 16) {
+                throw new Error('码表必须包含16个字符');
+            }
+
+            // 检查是否有重复字符
+            const charSet = new Set(chars);
+            if (charSet.size !== 16) {
+                throw new Error('码表中有重复字符')
+            }
+
+            return chars.join('');
+        }
+
+        // 事件监听器
+        standardEncodeBtn.addEventListener('click', () => {
+            try {
+                const inputText = standardInput.value;
+                if (!inputText) {
+                    standardResult.value = '请输入要编码的文本';
+                    return;
+                }
+
+                const encoded = base16Encode(inputText);
+                standardResult.value = encoded;
+            } catch (error) {
+                standardResult.value = `错误: ${error.message}`;
+            }
+        });
+
+        standardDecodeBtn.addEventListener('click', () => {
+            try {
+                const inputText = standardInput.value.trim();
+                if (!inputText) {
+                    standardResult.value = '请输入要解码的文本';
+                    return;
+                }
+
+                const decoded = base16Decode(inputText);
+                standardResult.value = decoded;
+            } catch (error) {
+                standardResult.value = `错误: ${error.message}`;
+            }
+        });
+
+        customEncodeBtn.addEventListener('click', () => {
+            try {
+                const inputText = customInput.value;
+                const customTable = validateCustomTable(customTableInput.value);
+
+                if (!inputText) {
+                    customResult.value = '请输入要编码的文本';
+                    return;
+                }
+
+                const encoded = base16Encode(inputText, customTable);
+                customResult.value = encoded;
+            } catch (error) {
+                customResult.value = `错误: ${error.message}`;
+            }
+        });
+
+        customDecodeBtn.addEventListener('click', () => {
+            try {
+                const inputText = customInput.value.trim();
+                const customTable = validateCustomTable(customTableInput.value);
+
+                if (!inputText) {
+                    customResult.value = '请输入要解码的文本';
+                    return;
+                }
+
+                const decoded = base16Decode(inputText, customTable);
+                customResult.value = decoded;
+            } catch (error) {
+                customResult.value = `错误: ${error.message}`;
+            }
+        });
+
+        // 初始化示例数据
+        document.addEventListener('DOMContentLoaded', () => {
+            standardInput.value = 'Hello World! ❤️ 你好，世界！';
+            customTableInput.value = '0123456789ABCDEF';
+            customInput.value = '自定义码表测试';
+        });
+    </script>
+</body>
+
+</html>
